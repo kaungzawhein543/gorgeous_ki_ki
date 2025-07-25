@@ -1,0 +1,150 @@
+body {
+  margin: 0;
+  user-select: none;
+  background-color: #111;
+  overflow: hidden;
+  perspective: 1000px;
+}
+
+.rain-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.drop {
+  position: absolute;
+  animation: fall 5s linear forwards;
+  transform-style: preserve-3d;
+  pointer-events: auto;
+  z-index: 10;
+  opacity: 0.9;
+  cursor: pointer;
+  filter: drop-shadow(0 0 8px rgba(255,192,203,0.7));
+}
+
+.text-drop {
+  color: pink;
+  font-size: 2rem;
+  font-weight: bold;
+  white-space: nowrap;
+  text-shadow: 0 0 8px hotpink;
+}
+
+.image-drop img {
+  width: 80px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 6px;
+  pointer-events: auto;
+  filter: drop-shadow(0 0 6px pink);
+}
+
+.click-message {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 182, 193, 0.85); /* lightpink */
+  color: #111;
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px hotpink;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: 999;
+  pointer-events: none;
+}
+
+/* 🌸 Welcome Overlay */
+.welcome-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.welcome-content {
+  text-align: center;
+  color: pink;
+  font-family: 'Segoe UI', sans-serif;
+  animation: fadeIn 1.5s ease;
+}
+
+.welcome-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-content p {
+  font-size: 1.2rem;
+  color: #ffddee;
+}
+
+.heart {
+  position: absolute;
+  font-size: 24px;
+  opacity: 0.9;
+  animation: floatHeart 1.4s ease forwards;
+  pointer-events: none;
+  user-select: none;
+  z-index: 9999;
+}
+
+.shiny-drop {
+  position: absolute;
+  width: 4px;
+  height: 12px;
+  background: radial-gradient(ellipse at center, #fff8fb 0%, #ffc0cb 100%);
+  border-radius: 4px;
+  opacity: 0.6;
+  animation: shinyFall 6s linear forwards;
+  pointer-events: none;
+  z-index: 2;
+}
+
+@keyframes shinyFall {
+  0% {
+    transform: translateY(-10vh);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(110vh);
+    opacity: 0;
+  }
+}
+
+
+@keyframes floatHeart {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) scale(1.5) rotate(15deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-10vh) translateZ(-300px) rotateY(-25deg) scale(0.5);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(110vh) translateZ(0px) rotateY(-25deg) scale(1);
+    opacity: 1;
+  }
+}
