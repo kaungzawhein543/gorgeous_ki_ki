@@ -164,7 +164,7 @@ body {
   }
   100% {
     top: 100vh;
-    opacity: 0.2;
+    opacity: 0;
   }
 }
 
