@@ -4,7 +4,7 @@ html, body {
   overflow: hidden;
   height: 100%;
   width: 100%;
-  touch-action: none; /* Optional: prevents browser gestures interfering */
+  touch-action: none;
 }
 
 
@@ -20,6 +20,11 @@ body {
   position: relative;
   width: 100vw;
   height: 100vh;
+  user-select: none;         
+  -webkit-user-select: none; 
+  -moz-user-select: none;   
+  -ms-user-select: none;
+  perspective: 1000px;
   transform-style: preserve-3d;
   pointer-events: none;
 }
@@ -33,6 +38,8 @@ body {
   opacity: 0.9;
   cursor: pointer;
   filter: drop-shadow(0 0 8px rgba(255,192,203,0.7));
+   will-change: transform;
+  backface-visibility: hidden;
 }
 
 .text-drop {
@@ -49,6 +56,8 @@ body {
   object-fit: cover;
   border-radius: 6px;
   pointer-events: auto;
+  user-select: none;
+  touch-action: none;
   filter: drop-shadow(0 0 6px pink);
 }
 
@@ -150,11 +159,43 @@ body {
 
 @keyframes fall {
   0% {
-    transform: translateY(-10vh) translateZ(-300px) rotateY(-25deg) scale(0.5);
-    opacity: 0.3;
+    top: -100px;
+    opacity: 0.8;
   }
   100% {
-    transform: translateY(110vh) translateZ(0px) rotateY(-25deg) scale(1);
-    opacity: 1;
+    top: 100vh;
+    opacity: 0.2;
+  }
+}
+
+@media (max-width: 600px) {
+  .text-drop {
+    font-size: 1.1rem;
+  }
+  .image-drop img {
+    width: 44px;
+    border-radius: 4px;
+  }
+  .welcome-content h1 {
+    font-size: 1.3rem;
+  }
+  .welcome-content p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .text-drop {
+    font-size: 1.3rem;
+  }
+  .image-drop img {
+    width: 54px;
+    border-radius: 5px;
+  }
+  .welcome-content h1 {
+    font-size: 2.1rem;
+  }
+  .welcome-content p {
+    font-size: 1.1rem;
   }
 }

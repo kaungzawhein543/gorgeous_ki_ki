@@ -1,6 +1,11 @@
+window.textImageScale = 1;
 const container = document.getElementById("rain-container");
 const welcomeBox = document.getElementById("welcome-box");
 const bgMusic = document.getElementById("bg-music");
+let dragTilt = 0;
+let baseRotateY = -25;
+let lastX = null;
+let dragging = false;
 
 const words = [
   "LET LOVE FALL",
@@ -33,41 +38,10 @@ const heartEmojis = ["💖", "💘", "💝", "💕", "💞", "💗", "❤️‍�
 // 🌟 Start on welcome click
 welcomeBox.addEventListener("click", () => {
   welcomeBox.style.display = "none";
+  console.log("something")
   bgMusic.play().catch(e => console.warn("Autoplay blocked:", e));
   startRain(); // ✅ start the actual rain now
-});
-
-let lastHoverTime = 0;
-
-let holdBurst = false;
-
-// For Desktop: hold mouse
-document.addEventListener("mousedown", () => { holdBurst = true; });
-document.addEventListener("mouseup", () => { holdBurst = false; });
-
-// For Touch Devices
-document.addEventListener("touchstart", () => { holdBurst = true; });
-document.addEventListener("touchend", () => { holdBurst = false; });
-
-// Heart burst while holding
-document.addEventListener("mousemove", (e) => {
-  if (holdBurst) {
-    burstHearts(e.pageX, e.pageY);
-  }
-});
-
-document.addEventListener("touchmove", (e) => {
-  if (holdBurst && e.touches.length > 0) {
-    const touch = e.touches[0];
-    burstHearts(touch.pageX, touch.pageY);
-  }
-});
-
-const now = Date.now();
-if (now - lastHoverTime > 120) {
-  burstHearts(x, y);
-  lastHoverTime = now;
-}
+}); 
 
 
 
@@ -92,6 +66,7 @@ function createDrop() {
     drop.classList.add("image-drop");
     const imagePath = imagePaths[Math.floor(Math.random() * imagePaths.length)];
     const img = document.createElement("img");
+    img.setAttribute("draggable",false);
     img.src = imagePath;
 
     img.addEventListener("click", (e) => {
@@ -103,9 +78,19 @@ function createDrop() {
     drop.appendChild(img);
   }
 
-  drop.style.left = Math.random() * 100 + "vw";
+  // Randomize drop direction: left or right
+  const useLeft = Math.random() > 0.5;
+  const position = Math.random() * 100;
+  if (useLeft) {
+    drop.style.left = position + "vw";
+    drop.style.right = "auto";
+  } else {
+    drop.style.right = position + "vw";
+    drop.style.left = "auto";
+  }
   const z = Math.random() * -400;
-  drop.style.transform = `translateZ(${z}px) rotateY(-25deg) scale(${1 + z / -600})`;
+  drop.dataset.z = z;
+  drop.style.transform = `translateZ(${z}px) rotateY(${baseRotateY + dragTilt}deg) scale(${(1 + z / -600) * window.textImageScale})`;
   drop.style.animationDuration = (Math.random() * 2 + 4) + "s";
 
   container.appendChild(drop);
@@ -127,32 +112,6 @@ function createShinyDrop() {
   setTimeout(() => shiny.remove(), 7000);
 }
 
-// ❤️ Floating hearts on click
-document.addEventListener("click", (e) => {
-  burstHearts(e.pageX, e.pageY);
-});
-
-function burstHearts(x, y) {
-  const count = 5 + Math.floor(Math.random() * 3);
-  for (let i = 0; i < count; i++) {
-    const heart = document.createElement("div");
-    heart.className = "heart";
-    heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
-
-    const offsetX = (Math.random() - 0.5) * 40;
-    const offsetY = (Math.random() - 0.5) * 30;
-    const rotation = (Math.random() - 0.5) * 40;
-    const scale = 0.5 + Math.random() * 0.5;
-
-    heart.style.left = x + offsetX + "px";
-    heart.style.top = y + offsetY + "px";
-    heart.style.transform = `rotate(${rotation}deg) scale(${scale})`;
-
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 1400);
-  }
-}
-
 // 🧠 Show message box
 function showClickMessage(text) {
   const box = document.getElementById("click-message");
@@ -161,8 +120,60 @@ function showClickMessage(text) {
   setTimeout(() => (box.style.opacity = 0), 2500);
 }
 
+function updateTiltOnDrops() {
+  const drops = document.querySelectorAll(".drop");
+  drops.forEach(drop => {
+    const z = parseFloat(drop.dataset.z) || 0;
+    const scale = (1 + z / -600) * window.textImageScale;
+    drop.style.transform = `translateZ(${z}px) rotateY(${baseRotateY + dragTilt}deg) scale(${scale})`;
+  });
+  requestAnimationFrame(updateTiltOnDrops);
+}
+
 // 🌧 Start rain intervals only after welcome clicked
 function startRain() {
-  setInterval(createDrop, 200);
-  setInterval(createShinyDrop, 100);
+  const width = window.innerWidth;
+  let dropFrequency, shinyFrequency, scaleFactor;
+
+  if (width < 600) { // Mobile
+    dropFrequency = 500; // fewer drops
+    shinyFrequency = 250;
+    scaleFactor = 0.7;
+  } else if (width < 1024) { // Tablet
+    dropFrequency = 250;
+    shinyFrequency = 150;
+    scaleFactor = 1.0;
+  } else { // Desktop
+    dropFrequency = 120;
+    shinyFrequency = 80;
+    scaleFactor = 1.3;
+  }
+
+  // Store scale globally for drop rendering
+  window.textImageScale = scaleFactor;
+
+  setInterval(createDrop, dropFrequency);
+  setInterval(createShinyDrop, shinyFrequency);
+  requestAnimationFrame(updateTiltOnDrops);
 }
+
+
+document.addEventListener("mousedown", () => dragging = true);
+document.addEventListener("mouseup", () => { dragging = false; lastX = null; });
+document.addEventListener("touchstart", () => dragging = true);
+document.addEventListener("touchend", () => { dragging = false; lastX = null; });
+
+document.addEventListener("mousemove", handleDrag);
+document.addEventListener("touchmove", handleDrag);
+
+function handleDrag(e) {
+  if (!dragging) return;
+  const x = e.touches ? e.touches[0].clientX : e.clientX;
+  if (lastX !== null) {
+    const dx = x - lastX;
+    dragTilt += dx * 0.03;
+    dragTilt = Math.max(-40, Math.min(40, dragTilt)); // limit
+  }
+  lastX = x;
+}
+
