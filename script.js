@@ -3,7 +3,7 @@ const container = document.getElementById("rain-container");
 const welcomeBox = document.getElementById("welcome-box");
 const bgMusic = document.getElementById("bg-music");
 let dragTilt = 0;
-let baseRotateY = -25;
+let baseRotateY = 0;
 let lastX = null;
 let dragging = false;
 
@@ -171,10 +171,10 @@ function handleDrag(e) {
   const x = e.touches ? e.touches[0].clientX : e.clientX;
   if (lastX !== null) {
     const dx = x - lastX;
-    // Increase sensitivity for touch
-    const sensitivity = e.touches ? 0.06 : 0.02;
+    // Greatly increase sensitivity for touch
+    const sensitivity = e.touches ? 0.18 : 0.02;
     dragTilt += dx * sensitivity;
-    dragTilt = Math.max(-30, Math.min(30, dragTilt));
+    dragTilt = Math.max(-45, Math.min(45, dragTilt));
   }
   lastX = x;
 }
