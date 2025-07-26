@@ -20,7 +20,7 @@ const words = [
   "CARRY THE PEACE",
   "BREATHE AND BELIEVE",
   "LET HEALING BEGIN"
-];
+];  
 
 const imagePaths = [
   "images/Black_shirt.jpg",
@@ -171,8 +171,8 @@ function handleDrag(e) {
   const x = e.touches ? e.touches[0].clientX : e.clientX;
   if (lastX !== null) {
     const dx = x - lastX;
-    // Greatly increase sensitivity for touch
-    const sensitivity = e.touches ? 0.18 : 0.02;
+    // Higher sensitivity for touch, normal for mouse
+    const sensitivity = e.touches ? 0.10 : 0.02;
     dragTilt += dx * sensitivity;
     dragTilt = Math.max(-45, Math.min(45, dragTilt));
   }
