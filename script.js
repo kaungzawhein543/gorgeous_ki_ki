@@ -136,8 +136,8 @@ function startRain() {
   let dropFrequency, shinyFrequency, scaleFactor;
 
   if (width < 600) { // Mobile
-    dropFrequency = 500; // fewer drops
-    shinyFrequency = 250;
+    dropFrequency = 700; // fewer drops, slower interval
+    shinyFrequency = 350;
     scaleFactor = 0.7;
   } else if (width < 1024) { // Tablet
     dropFrequency = 250;
@@ -149,7 +149,6 @@ function startRain() {
     scaleFactor = 1.3;
   }
 
-  // Store scale globally for drop rendering
   window.textImageScale = scaleFactor;
 
   setInterval(createDrop, dropFrequency);
@@ -168,11 +167,14 @@ document.addEventListener("touchmove", handleDrag);
 
 function handleDrag(e) {
   if (!dragging) return;
+  if (e.touches) e.preventDefault();
   const x = e.touches ? e.touches[0].clientX : e.clientX;
   if (lastX !== null) {
     const dx = x - lastX;
-    dragTilt += dx * 0.03;
-    dragTilt = Math.max(-40, Math.min(40, dragTilt)); // limit
+    // Increase sensitivity for touch
+    const sensitivity = e.touches ? 0.06 : 0.02;
+    dragTilt += dx * sensitivity;
+    dragTilt = Math.max(-30, Math.min(30, dragTilt));
   }
   lastX = x;
 }
