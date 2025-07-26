@@ -136,8 +136,8 @@ function startRain() {
   let dropFrequency, shinyFrequency, scaleFactor;
 
   if (width < 600) { // Mobile
-    dropFrequency = 700; // fewer drops, slower interval
-    shinyFrequency = 350;
+    dropFrequency = 300; // even more drops
+    shinyFrequency = 120;
     scaleFactor = 0.7;
   } else if (width < 1024) { // Tablet
     dropFrequency = 250;
